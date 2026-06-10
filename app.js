@@ -311,9 +311,7 @@ function buildItemRow(item, vendor) {
   const main = el("div", "item-main");
   const nameEl = el("span", "item-name");
   nameEl.textContent = item.unit ? `${item.name}（${item.unit}）` : item.name;
-  const guideEl = el("span", "item-guide");
   main.appendChild(nameEl);
-  main.appendChild(guideEl);
 
   const stepper = el("div", "stepper");
   const minus = el("button", "step-btn minus");
@@ -331,8 +329,8 @@ function buildItemRow(item, vendor) {
   plus.textContent = "＋";
   plus.setAttribute("aria-label", item.name + " を1増やす");
 
-  minus.addEventListener("click", () => safe(() => applyQty(item.id, getQty(item.id) - 1)));
-  plus.addEventListener("click", () => safe(() => applyQty(item.id, getQty(item.id) + 1)));
+  minus.addEventListener("click", () => safe(() => applyQty(item.id, suggestedBase(item.id) - 1)));
+  plus.addEventListener("click", () => safe(() => applyQty(item.id, suggestedBase(item.id) + 1)));
   display.addEventListener("click", () => openNumberPicker(item.id));
 
   stepper.appendChild(minus);
@@ -341,7 +339,7 @@ function buildItemRow(item, vendor) {
   row.appendChild(main);
   row.appendChild(stepper);
 
-  refs[item.id] = { row, display, guide: guideEl };
+  refs[item.id] = { row, display };
   return row;
 }
 
@@ -356,8 +354,7 @@ function applyQty(id, value) {
   if (v <= 0) delete state.qty[id];
   else state.qty[id] = v;
 
-  const ref = refs[id];
-  if (ref && ref.display) ref.display.textContent = String(v);
+  updateDisplay(id);
   refreshRowVisual(id);
   updateVendorCount(itemById[id].vendor);
   scheduleSave();
@@ -407,24 +404,29 @@ function updateGrandTotal() {
 }
 function refreshAllValues() {
   ITEMS.forEach((it) => {
-    const ref = refs[it.id];
-    if (ref && ref.display) ref.display.textContent = String(getQty(it.id));
+    updateDisplay(it.id);
     refreshRowVisual(it.id);
   });
   VENDORS.forEach((v) => updateVendorCount(v.id));
-  updateAllGuides();
 }
 
-/* ----- 目安（在庫の目安）の表示 ----- */
-function updateItemGuide(id) {
-  const ref = refs[id];
-  if (!ref || !ref.guide) return;
-  const v = getGuide(id);
-  ref.guide.textContent = v != null ? `目安 ${v}` : "目安 —";
-  ref.guide.classList.toggle("none", v == null);
+/* ----- 数量表示：発注前は目安をグレー、入力後は実数を黒で ----- */
+// 表示・増減の基準：実数があればそれ、無ければ目安、それも無ければ0
+function suggestedBase(id) {
+  const q = getQty(id);
+  if (q > 0) return q;
+  const g = getGuide(id);
+  return g != null ? g : 0;
 }
-function updateAllGuides() {
-  ITEMS.forEach((it) => updateItemGuide(it.id));
+function displayValue(id) {
+  return String(suggestedBase(id));
+}
+function updateDisplay(id) {
+  const ref = refs[id];
+  if (ref && ref.display) ref.display.textContent = displayValue(id);
+}
+function updateAllDisplays() {
+  ITEMS.forEach((it) => updateDisplay(it.id));
 }
 
 function buildGuideSwitch() {
@@ -432,7 +434,7 @@ function buildGuideSwitch() {
   if (!wrap) return;
   wrap.innerHTML = "";
   const label = el("span", "guide-switch-label");
-  label.textContent = "目安";
+  label.textContent = "基準";
   const seg = el("div", "seg");
   GUIDE_MODES.forEach((m) => {
     const b = el("button", "seg-btn");
@@ -460,7 +462,7 @@ function setGuideMode(mode) {
       b.setAttribute("aria-pressed", String(on));
     });
   }
-  updateAllGuides();
+  updateAllDisplays();
 }
 
 /* =========================================================================
@@ -742,14 +744,14 @@ function openNumberPicker(itemId) {
     const item = itemById[itemId];
     const g = getGuide(itemId);
     $("#pickerName").textContent = item.unit ? `${item.name}（${item.unit}）` : item.name;
-    $("#pickerGuide").textContent = g != null ? `目安 ${g}` : "目安 —";
+    $("#pickerGuide").textContent = g != null ? `基準 ${g}` : "基準 —";
 
     const wheel = $("#wheel");
     let html = "";
     for (let n = 0; n <= WHEEL_MAX; n++) {
       const isGuide = g != null && n === g;
       html += `<button type="button" class="wheel-num${isGuide ? " guide" : ""}" data-n="${n}">${n}${
-        isGuide ? `<span class="wheel-tag">目安</span>` : ""
+        isGuide ? `<span class="wheel-tag">基準</span>` : ""
       }</button>`;
     }
     wheel.innerHTML = html;

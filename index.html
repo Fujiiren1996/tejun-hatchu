@@ -64,6 +64,25 @@
     </div>
   </div>
 
+  <!-- 数量ピッカー（目安を中心にホイールで選ぶ） -->
+  <div id="picker" class="picker" hidden>
+    <div class="picker-backdrop" id="pickerBackdrop"></div>
+    <div class="picker-sheet" role="dialog" aria-modal="true" aria-label="数量を選ぶ">
+      <div class="picker-head">
+        <span class="picker-name" id="pickerName"></span>
+        <span class="picker-guide" id="pickerGuide"></span>
+      </div>
+      <div class="wheel-wrap">
+        <div class="wheel-band" aria-hidden="true"></div>
+        <div class="wheel" id="wheel"></div>
+      </div>
+      <div class="picker-actions">
+        <button type="button" id="pickerSet" class="pk-set">決定</button>
+        <button type="button" id="pickerCancel" class="pk-cancel">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <!-- PDF生成用の画面外ステージ -->
   <div id="pdfStage" aria-hidden="true"></div>
 

@@ -321,40 +321,27 @@ function buildItemRow(item, vendor) {
   minus.textContent = "−";
   minus.setAttribute("aria-label", item.name + " を1減らす");
 
-  const input = el("input", "qty-input");
-  input.type = "text";
-  input.inputMode = "numeric";
-  input.setAttribute("pattern", "[0-9]*");
-  input.setAttribute("aria-label", item.name + " の発注数");
+  const display = el("button", "qty-display");
+  display.type = "button";
+  display.textContent = "0";
+  display.setAttribute("aria-label", item.name + " の発注数（タップで選択）");
 
   const plus = el("button", "step-btn plus");
   plus.type = "button";
   plus.textContent = "＋";
   plus.setAttribute("aria-label", item.name + " を1増やす");
 
-  minus.addEventListener("click", () => safe(() => applyQty(item.id, getQty(item.id) - 1, false)));
-  plus.addEventListener("click", () => safe(() => applyQty(item.id, getQty(item.id) + 1, false)));
-  input.addEventListener("input", () =>
-    safe(() => {
-      const digits = input.value.replace(/[^0-9]/g, "");
-      applyQty(item.id, digits === "" ? 0 : Number(digits), true);
-    })
-  );
-  input.addEventListener("focus", () => input.select());
-  input.addEventListener("blur", () =>
-    safe(() => {
-      input.value = String(getQty(item.id));
-      refreshRowVisual(item.id);
-    })
-  );
+  minus.addEventListener("click", () => safe(() => applyQty(item.id, getQty(item.id) - 1)));
+  plus.addEventListener("click", () => safe(() => applyQty(item.id, getQty(item.id) + 1)));
+  display.addEventListener("click", () => openNumberPicker(item.id));
 
   stepper.appendChild(minus);
-  stepper.appendChild(input);
+  stepper.appendChild(display);
   stepper.appendChild(plus);
   row.appendChild(main);
   row.appendChild(stepper);
 
-  refs[item.id] = { row, input, guide: guideEl };
+  refs[item.id] = { row, display, guide: guideEl };
   return row;
 }
 
@@ -364,13 +351,13 @@ function buildItemRow(item, vendor) {
 function getQty(id) {
   return state.qty[id] || 0;
 }
-function applyQty(id, value, fromInput) {
+function applyQty(id, value) {
   const v = clampQty(value);
   if (v <= 0) delete state.qty[id];
   else state.qty[id] = v;
 
   const ref = refs[id];
-  if (ref && !fromInput) ref.input.value = String(v);
+  if (ref && ref.display) ref.display.textContent = String(v);
   refreshRowVisual(id);
   updateVendorCount(itemById[id].vendor);
   scheduleSave();
@@ -380,7 +367,7 @@ function refreshRowVisual(id) {
   if (!ref) return;
   const v = getQty(id);
   ref.row.classList.toggle("active", v > 0);
-  ref.input.classList.toggle("zero", v <= 0);
+  if (ref.display) ref.display.classList.toggle("zero", v <= 0);
 }
 function updateVendorCount(vid) {
   const items = itemsByVendor(vid);
@@ -421,7 +408,7 @@ function updateGrandTotal() {
 function refreshAllValues() {
   ITEMS.forEach((it) => {
     const ref = refs[it.id];
-    if (ref) ref.input.value = String(getQty(it.id));
+    if (ref && ref.display) ref.display.textContent = String(getQty(it.id));
     refreshRowVisual(it.id);
   });
   VENDORS.forEach((v) => updateVendorCount(v.id));
@@ -742,6 +729,79 @@ function closePreview() {
 }
 
 /* =========================================================================
+ * 数量ピッカー（数字タップ → その品目の「目安」を中心にホイールで選ぶ）
+ * ========================================================================= */
+let pickerItemId = null;
+const WHEEL_MAX = 99;
+const WHEEL_ROW_H = 44;
+let wheelSelTimer = null;
+
+function openNumberPicker(itemId) {
+  safe(() => {
+    pickerItemId = itemId;
+    const item = itemById[itemId];
+    const g = getGuide(itemId);
+    $("#pickerName").textContent = item.unit ? `${item.name}（${item.unit}）` : item.name;
+    $("#pickerGuide").textContent = g != null ? `目安 ${g}` : "目安 —";
+
+    const wheel = $("#wheel");
+    let html = "";
+    for (let n = 0; n <= WHEEL_MAX; n++) {
+      const isGuide = g != null && n === g;
+      html += `<button type="button" class="wheel-num${isGuide ? " guide" : ""}" data-n="${n}">${n}${
+        isGuide ? `<span class="wheel-tag">目安</span>` : ""
+      }</button>`;
+    }
+    wheel.innerHTML = html;
+    wheel.querySelectorAll(".wheel-num").forEach((b) => {
+      b.addEventListener("click", () => safe(() => commitPicker(Number(b.dataset.n))));
+    });
+
+    $("#picker").hidden = false;
+    document.body.classList.add("modal-open");
+
+    // その品目の現在値（無ければ目安）を中心に
+    const cur = getQty(itemId);
+    const start = cur > 0 ? cur : g != null ? g : 0;
+    wheel.scrollTop = Math.min(start, WHEEL_MAX) * WHEEL_ROW_H;
+    updateWheelSel();
+  });
+}
+
+function currentWheelValue() {
+  const wheel = $("#wheel");
+  if (!wheel) return 0;
+  return Math.max(0, Math.min(WHEEL_MAX, Math.round(wheel.scrollTop / WHEEL_ROW_H)));
+}
+
+function updateWheelSel() {
+  const wheel = $("#wheel");
+  if (!wheel) return;
+  const v = currentWheelValue();
+  wheel.querySelectorAll(".wheel-num.sel").forEach((e) => e.classList.remove("sel"));
+  const elSel = wheel.querySelector(`.wheel-num[data-n="${v}"]`);
+  if (elSel) elSel.classList.add("sel");
+}
+
+function onWheelScroll() {
+  clearTimeout(wheelSelTimer);
+  wheelSelTimer = setTimeout(updateWheelSel, 40);
+}
+
+function commitPicker(v) {
+  if (pickerItemId == null) return;
+  applyQty(pickerItemId, v);
+  closePicker();
+}
+
+function closePicker() {
+  const modal = $("#picker");
+  if (modal) modal.hidden = true;
+  document.body.classList.remove("modal-open");
+  pickerItemId = null;
+}
+
+/* =========================================================================
  * 本日分クリア
  * ========================================================================= */
 function clearToday() {
@@ -877,6 +937,12 @@ function init() {
       if (result && result !== "canceled") closePreview();
     })
   );
+
+  // 数量ピッカー（目安を中心にホイールで選ぶ）
+  $("#pickerCancel").addEventListener("click", closePicker);
+  $("#pickerBackdrop").addEventListener("click", closePicker);
+  $("#pickerSet").addEventListener("click", () => safe(() => commitPicker(currentWheelValue())));
+  $("#wheel").addEventListener("scroll", onWheelScroll, { passive: true });
 
   // 目次へ戻る
   const toTop = $("#toTopBtn");

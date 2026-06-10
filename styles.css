@@ -370,8 +370,8 @@ body {
   color: var(--v-accent, var(--shop));
 }
 
-.qty-input {
-  width: 56px;
+.qty-display {
+  width: 60px;
   height: var(--tap);
   border: none;
   border-left: 1.5px solid var(--line);
@@ -382,17 +382,16 @@ body {
   font-family: inherit;
   color: var(--ink);
   background: #fff;
-  -moz-appearance: textfield;
   padding: 0;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
-.qty-input::-webkit-outer-spin-button,
-.qty-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.qty-display:active {
+  background: #f4f5f3;
 }
 
-.qty-input.zero {
+.qty-display.zero {
   color: #b9bdb7;
   font-weight: 600;
 }
@@ -626,6 +625,155 @@ body.modal-open {
   flex: 1 1 0;
   order: 3;
   min-height: 48px;
+  border: 1.5px solid #ccc;
+  border-radius: 12px;
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* ===== 数量ピッカー（ホイール） ===== */
+.picker {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.picker[hidden] {
+  display: none;
+}
+
+.picker-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 24, 21, 0.55);
+}
+
+.picker-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -6px 30px rgba(0, 0, 0, 0.3);
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: sheet-up 0.2s ease;
+}
+
+.picker-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 16px 4px;
+}
+
+.picker-name {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.picker-guide {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--shop);
+}
+
+.wheel-wrap {
+  position: relative;
+  height: 220px;
+  margin: 4px 0 2px;
+}
+
+.wheel-band {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 88px;
+  height: 44px;
+  border-top: 2px solid var(--line);
+  border-bottom: 2px solid var(--line);
+  background: rgba(47, 111, 79, 0.06);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.wheel {
+  height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 88px 0;
+  text-align: center;
+}
+
+.wheel-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: inherit;
+  color: #aab0aa;
+  scroll-snap-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.wheel-num.guide {
+  color: var(--shop);
+}
+
+.wheel-num.sel {
+  color: var(--ink);
+  font-size: 27px;
+  font-weight: 800;
+}
+
+.wheel-tag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--shop);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+
+.picker-actions {
+  display: flex;
+  gap: 10px;
+  padding: 6px 14px 14px;
+}
+
+.pk-set {
+  flex: 1;
+  min-height: 52px;
+  border: none;
+  border-radius: 12px;
+  background: var(--shop);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.pk-cancel {
+  flex: 0 0 108px;
+  min-height: 52px;
   border: 1.5px solid #ccc;
   border-radius: 12px;
   background: #fff;

@@ -137,8 +137,20 @@ body {
   font-size: 18px;
   font-weight: 800;
   text-align: center;
-  margin: 6px 0 14px;
+  margin: 6px 0 6px;
   letter-spacing: 0.04em;
+}
+
+.grand-total {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+
+.grand-total.has-items {
+  color: var(--shop);
 }
 
 /* ===== 日付カード ===== */
@@ -318,57 +330,33 @@ body {
   font-weight: 600;
 }
 
-/* 業者フッター（PDF・テキスト） */
+/* 業者フッター：発注書を作るボタン */
 .vendor-foot {
-  display: flex;
-  gap: 10px;
   margin-top: 12px;
-  align-items: stretch;
 }
 
-.pdf-btn {
+.order-btn {
   appearance: none;
-  flex: 1;
+  width: 100%;
   border: none;
   border-radius: 12px;
   background: var(--v-accent, var(--shop));
   color: #fff;
   font-size: 16px;
   font-weight: 800;
-  min-height: 52px;
+  min-height: 54px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
   touch-action: manipulation;
 }
 
-.pdf-btn:active {
+.order-btn:active {
   filter: brightness(0.93);
 }
 
-.pdf-btn:disabled {
-  opacity: 0.6;
-}
-
-.text-btn {
-  appearance: none;
-  flex: 0 0 auto;
-  border: 1.5px solid var(--v-accent, var(--shop));
-  border-radius: 12px;
-  background: #fff;
-  color: var(--v-accent, var(--shop));
-  font-size: 14px;
-  font-weight: 700;
-  padding: 0 16px;
-  min-height: 52px;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.text-btn:active {
-  background: #f0f0f0;
+.order-btn:disabled {
+  background: #d7dad6;
+  color: #fff;
+  cursor: default;
 }
 
 /* ===== 末尾 ===== */
@@ -426,7 +414,7 @@ body {
   left: 50%;
   bottom: calc(78px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
-  z-index: 100;
+  z-index: 10000;
   background: rgba(31, 36, 33, 0.95);
   color: #fff;
   font-size: 14px;
@@ -440,6 +428,145 @@ body {
 
 .toast[hidden] {
   display: none;
+}
+
+/* ===== 送信前プレビュー（モーダル） ===== */
+body.modal-open {
+  overflow: hidden;
+}
+
+.preview {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.preview[hidden] {
+  display: none;
+}
+
+.preview-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 24, 21, 0.55);
+}
+
+.preview-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -6px 30px rgba(0, 0, 0, 0.3);
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: sheet-up 0.22s ease;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.preview-title {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #555;
+  padding: 13px;
+  border-bottom: 1px solid #eee;
+}
+
+.preview-frame {
+  flex: 1 1 auto;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #e9ebe8;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.pv-holder {
+  margin: 0 auto;
+  position: relative;
+}
+
+.preview-frame .order-form {
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.18);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.preview-actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 14px;
+  border-top: 1px solid #eee;
+}
+
+.pv-share {
+  flex: 1 1 100%;
+  order: 1;
+  min-height: 54px;
+  border: none;
+  border-radius: 12px;
+  background: var(--shop);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.pv-share:active {
+  filter: brightness(0.93);
+}
+
+.pv-share:disabled {
+  opacity: 0.6;
+}
+
+.pv-text {
+  flex: 1 1 0;
+  order: 2;
+  min-height: 48px;
+  border: 1.5px solid var(--shop);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--shop);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.pv-close {
+  flex: 1 1 0;
+  order: 3;
+  min-height: 48px;
+  border: 1.5px solid #ccc;
+  border-radius: 12px;
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 /* ===== PDF生成ステージ（画面外） ===== */

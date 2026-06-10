@@ -10,8 +10,9 @@
  *（変えると、その品目の当日入力がリセットされます）。
  * ========================================================================= */
 
-/* ===== 設定：お店の名前 ===== */
+/* ===== 設定：お店の情報 ===== */
 const SHOP_NAME = "テジュン食堂";
+const SHOP_TEL = ""; // 電話番号（任意）。例 "03-1234-5678" と入れるとPDFに表示されます。空ならPDFに出ません。
 
 /* ===== 設定：業者（上から表示順・色は薄め） ===== */
 const VENDORS = [
@@ -211,22 +212,17 @@ function buildVendors() {
     // 食材行
     itemsByVendor(v.id).forEach((item) => sec.appendChild(buildItemRow(item, v)));
 
-    // フッター（PDF・テキスト）
+    // フッター：発注書を作る（プレビュー → 共有）
     const foot = el("div", "vendor-foot");
-    const pdfBtn = el("button", "pdf-btn");
-    pdfBtn.type = "button";
-    pdfBtn.textContent = "📄 PDF出力";
-    pdfBtn.addEventListener("click", () => generatePdf(v, pdfBtn));
-    const textBtn = el("button", "text-btn");
-    textBtn.type = "button";
-    textBtn.textContent = "テキスト";
-    textBtn.addEventListener("click", () => shareText(v));
-    foot.appendChild(pdfBtn);
-    foot.appendChild(textBtn);
+    const orderBtn = el("button", "order-btn");
+    orderBtn.type = "button";
+    orderBtn.textContent = "品目を入力してください";
+    orderBtn.addEventListener("click", () => openPreview(v));
+    foot.appendChild(orderBtn);
     sec.appendChild(foot);
 
     wrap.appendChild(sec);
-    Object.assign(vendorEls[v.id], { section: sec, countBadge });
+    Object.assign(vendorEls[v.id], { section: sec, countBadge, orderBtn });
   });
 }
 
@@ -315,6 +311,28 @@ function updateVendorCount(vid) {
     v.tocCount.textContent = String(n);
     v.tocCount.classList.toggle("zero", n === 0);
   }
+  if (v.orderBtn) {
+    v.orderBtn.textContent = n > 0 ? `📄 発注書を作る（${n}品）` : "品目を入力してください";
+    v.orderBtn.disabled = n === 0;
+  }
+  updateGrandTotal();
+}
+
+function updateGrandTotal() {
+  const elTotal = $("#grandTotal");
+  if (!elTotal) return;
+  let items = 0;
+  let vendors = 0;
+  VENDORS.forEach((v) => {
+    const n = itemsByVendor(v.id).reduce((a, it) => a + (getQty(it.id) > 0 ? 1 : 0), 0);
+    if (n > 0) {
+      items += n;
+      vendors += 1;
+    }
+  });
+  elTotal.textContent =
+    items > 0 ? `本日の発注：合計 ${items} 品 / ${vendors} 業者` : "本日の発注：まだ入力がありません";
+  elTotal.classList.toggle("has-items", items > 0);
 }
 function refreshAllValues() {
   ITEMS.forEach((it) => {
@@ -337,42 +355,72 @@ function orderedItems(vendor) {
 function buildOrderFormHTML(vendor, list) {
   const rows = list
     .map(
-      (it) => `
-      <tr>
-        <td style="border:1px solid #333;padding:11px 14px;font-size:17px;">${escapeHtml(it.name)}</td>
-        <td style="border:1px solid #333;padding:11px 14px;font-size:18px;font-weight:700;text-align:center;width:96px;">
-          ${it.qty}${it.unit ? `<span style="font-size:12px;font-weight:400;"> ${escapeHtml(it.unit)}</span>` : ""}
-        </td>
+      (it, i) => `
+      <tr style="background:${i % 2 ? "#f4f7f5" : "#ffffff"};">
+        <td style="border:1px solid #d8ddd9;padding:12px 4px;text-align:center;color:#8a948d;font-size:14px;">${i + 1}</td>
+        <td style="border:1px solid #d8ddd9;padding:12px 16px;font-size:17px;">${escapeHtml(it.name)}</td>
+        <td style="border:1px solid #d8ddd9;padding:12px 8px;text-align:center;font-size:22px;font-weight:800;line-height:1.1;">${it.qty}${
+          it.unit ? `<span style="font-size:12px;font-weight:500;color:#666;"> ${escapeHtml(it.unit)}</span>` : ""
+        }</td>
       </tr>`
     )
     .join("");
 
+  const telLine = SHOP_TEL
+    ? `<div style="font-size:13px;color:#333;margin-top:2px;">TEL：${escapeHtml(SHOP_TEL)}</div>`
+    : "";
+
   return `
-  <div style="width:680px;padding:34px 38px;background:#fff;color:#111;
-              font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif;
-              box-sizing:border-box;">
-    <div style="text-align:center;font-size:28px;font-weight:800;letter-spacing:0.34em;margin-bottom:22px;">発 注 書</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;gap:16px;">
-      <div style="font-size:23px;font-weight:800;border-bottom:2px solid #111;padding:0 8px 5px 2px;">
-        ${escapeHtml(vendor.name)}　御中
+  <div class="order-form" style="width:680px;background:#fff;color:#1a1a1a;
+       font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif;
+       box-sizing:border-box;border:1px solid #e3e5e1;">
+    <div style="height:10px;background:${vendor.accent};"></div>
+    <div style="padding:34px 40px 38px;">
+
+      <div style="text-align:center;margin-bottom:22px;">
+        <span style="font-size:30px;font-weight:800;letter-spacing:0.5em;padding:0 4px 8px 24px;
+              border-bottom:3px double #1a1a1a;">発注書</span>
       </div>
-      <div style="font-size:13.5px;text-align:right;line-height:1.85;white-space:nowrap;">
-        <div>発注元：${escapeHtml(SHOP_NAME)}</div>
-        <div>発注日：${formatJp(state.orderDate)}</div>
-        <div>納品希望日：${formatJp(state.deliveryDate)}</div>
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:22px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:25px;font-weight:800;border-bottom:2px solid #1a1a1a;
+               padding-bottom:7px;display:inline-block;">${escapeHtml(vendor.name)}　御中</div>
+          <div style="font-size:13px;color:#555;margin-top:14px;">発注日：${formatJp(state.orderDate)}</div>
+        </div>
+        <div style="flex:0 0 auto;border:1px solid #cdd3ce;border-radius:8px;padding:12px 16px;min-width:224px;">
+          <div style="font-size:11px;color:#9aa39c;letter-spacing:0.08em;">発注元</div>
+          <div style="font-size:17px;font-weight:800;">${escapeHtml(SHOP_NAME)}</div>
+          ${telLine}
+          <div style="margin-top:9px;padding-top:9px;border-top:1px dashed #d3d8d4;">
+            <div style="font-size:11px;color:#9aa39c;letter-spacing:0.08em;">納品希望日</div>
+            <div style="font-size:18px;font-weight:800;color:#c0392b;">${formatJp(state.deliveryDate)}</div>
+          </div>
+        </div>
       </div>
+
+      <div style="font-size:14px;margin-bottom:12px;">下記のとおり発注いたします。ご確認のほど、よろしくお願いいたします。</div>
+
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#2f3a34;color:#fff;">
+            <th style="border:1px solid #2f3a34;padding:11px 4px;width:46px;font-size:13px;font-weight:700;">No.</th>
+            <th style="border:1px solid #2f3a34;padding:11px 16px;text-align:left;font-size:14px;font-weight:700;">品名</th>
+            <th style="border:1px solid #2f3a34;padding:11px 8px;width:104px;font-size:14px;font-weight:700;">数量</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+
+      <div style="text-align:right;font-size:15px;font-weight:800;margin-top:12px;">合計　${list.length} 品目</div>
+
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;color:#9aa39c;letter-spacing:0.08em;margin-bottom:5px;">備考</div>
+        <div style="border:1px solid #cdd3ce;border-radius:8px;height:56px;"></div>
+      </div>
+
+      <div style="text-align:right;font-size:14px;margin-top:24px;">以上、よろしくお願いいたします。</div>
     </div>
-    <table style="width:100%;border-collapse:collapse;">
-      <thead>
-        <tr>
-          <th style="border:1px solid #333;padding:9px 14px;background:#eee;font-size:14px;text-align:left;">品名</th>
-          <th style="border:1px solid #333;padding:9px 14px;background:#eee;font-size:14px;text-align:center;width:96px;">数量</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div style="margin-top:16px;font-size:13px;color:#444;">合計 ${list.length} 品目</div>
-    <div style="margin-top:30px;font-size:15px;">以上、よろしくお願いいたします。</div>
   </div>`;
 }
 
@@ -429,14 +477,15 @@ async function generatePdf(vendor, btn) {
 
     const filename = `発注書_${vendor.name}_${state.orderDate}.pdf`;
     const blob = pdf.output("blob");
-    await sharePdf(blob, filename, vendor);
+    return await sharePdf(blob, filename, vendor);
   } catch (e) {
     console.error("PDF生成エラー", e);
-    toast("PDF作成に失敗しました。『テキスト』で送れます。");
+    toast("PDF作成に失敗しました。『テキストで送る』をお試しください。");
+    return false;
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.textContent = btn.dataset.label || "📄 PDF出力";
+      btn.textContent = btn.dataset.label || "📄 発注書を作る";
     }
     $("#pdfStage").innerHTML = "";
   }
@@ -451,9 +500,9 @@ async function sharePdf(blob, filename, vendor) {
         files: [file],
         title: `発注書 ${vendor.name}`,
       });
-      return;
+      return "shared";
     } catch (e) {
-      if (e && e.name === "AbortError") return; // ユーザーが共有をキャンセル
+      if (e && e.name === "AbortError") return "canceled"; // ユーザーが共有をキャンセル
       console.warn("共有に失敗→ダウンロードに切替", e);
     }
   }
@@ -467,6 +516,7 @@ async function sharePdf(blob, filename, vendor) {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 15000);
   toast("PDFを保存しました");
+  return "downloaded";
 }
 
 /* =========================================================================
@@ -511,6 +561,51 @@ async function shareText(vendor) {
       window.prompt("コピーしてLINEに貼り付けてください", text);
     }
   });
+}
+
+/* =========================================================================
+ * 送信前プレビュー（この内容で送ります → 共有）
+ * ========================================================================= */
+let previewVendor = null;
+
+function openPreview(vendor) {
+  safe(() => {
+    const list = orderedItems(vendor);
+    if (list.length === 0) {
+      toast(`${vendor.name}：発注する品目がありません`);
+      return;
+    }
+    previewVendor = vendor;
+    const frame = $("#previewFrame");
+    frame.innerHTML = `<div class="pv-holder">${buildOrderFormHTML(vendor, list)}</div>`;
+    const modal = $("#preview");
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+    fitPreview(); // 同期（レイアウト確定）
+    requestAnimationFrame(() => requestAnimationFrame(fitPreview)); // フォント反映後の保険
+  });
+}
+
+function fitPreview() {
+  const frame = $("#previewFrame");
+  if (!frame) return;
+  const form = frame.querySelector(".order-form");
+  const holder = form && form.parentElement;
+  if (!form || !holder) return;
+  form.style.transform = "none";
+  const avail = frame.clientWidth - 32; // 左右パディング分
+  const scale = Math.min(1, avail / 680);
+  form.style.transformOrigin = "top left";
+  form.style.transform = `scale(${scale})`;
+  holder.style.width = Math.round(680 * scale) + "px";
+  holder.style.height = Math.round(form.offsetHeight * scale) + "px";
+}
+
+function closePreview() {
+  const modal = $("#preview");
+  if (modal) modal.hidden = true;
+  document.body.classList.remove("modal-open");
+  previewVendor = null;
 }
 
 /* =========================================================================
@@ -633,6 +728,22 @@ function init() {
   // クリア
   $("#clearBtn").addEventListener("click", clearToday);
 
+  // プレビュー（送信前確認）
+  $("#previewClose").addEventListener("click", closePreview);
+  $("#previewBackdrop").addEventListener("click", closePreview);
+  $("#previewText").addEventListener("click", () =>
+    safe(() => {
+      if (previewVendor) shareText(previewVendor);
+    })
+  );
+  $("#previewShare").addEventListener("click", () =>
+    safeAsync(async () => {
+      if (!previewVendor) return;
+      const result = await generatePdf(previewVendor, $("#previewShare"));
+      if (result && result !== "canceled") closePreview();
+    })
+  );
+
   // 目次へ戻る
   const toTop = $("#toTopBtn");
   toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
@@ -649,7 +760,11 @@ function init() {
     if (document.visibilityState === "visible") checkDateRollover();
   });
   window.addEventListener("focus", checkDateRollover);
-  window.addEventListener("resize", updateTocHeightVar);
+  window.addEventListener("resize", () => {
+    updateTocHeightVar();
+    const modal = $("#preview");
+    if (modal && !modal.hidden) fitPreview();
+  });
 
   // 想定外エラーでも画面を壊さない（リロードしない）
   window.addEventListener("error", (e) => {

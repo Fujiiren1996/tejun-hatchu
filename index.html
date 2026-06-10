@@ -19,6 +19,7 @@
 
   <main class="content">
     <h1 class="app-title">テジュン食堂　発注書</h1>
+    <p class="grand-total" id="grandTotal">本日の発注：まだ入力がありません</p>
 
     <!-- 発注日・納品希望日 -->
     <section class="date-card">
@@ -45,6 +46,20 @@
 
   <!-- 目次へ戻るフローティングボタン -->
   <button type="button" id="toTopBtn" class="to-top" aria-label="目次へ戻る" hidden>▲ 目次</button>
+
+  <!-- 送信前プレビュー -->
+  <div id="preview" class="preview" hidden>
+    <div class="preview-backdrop" id="previewBackdrop"></div>
+    <div class="preview-sheet" role="dialog" aria-modal="true" aria-label="発注書プレビュー">
+      <div class="preview-title">この内容で送ります</div>
+      <div class="preview-frame" id="previewFrame"></div>
+      <div class="preview-actions">
+        <button type="button" id="previewShare" class="pv-share">📤 共有・保存（PDF）</button>
+        <button type="button" id="previewText" class="pv-text">テキストで送る</button>
+        <button type="button" id="previewClose" class="pv-close">閉じる</button>
+      </div>
+    </div>
+  </div>
 
   <!-- PDF生成用の画面外ステージ -->
   <div id="pdfStage" aria-hidden="true"></div>

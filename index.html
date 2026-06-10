@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2f6f4f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="発注書" />
+  <title>テジュン食堂 発注書</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 上部：目次（業者へジャンプ） -->
+  <header class="topbar" id="topbar">
+    <nav class="toc" id="toc" aria-label="業者目次"></nav>
+    <div class="save-pill" id="savePill" aria-live="polite">保存済み</div>
+  </header>
+
+  <main class="content">
+    <h1 class="app-title">テジュン食堂　発注書</h1>
+
+    <!-- 発注日・納品希望日 -->
+    <section class="date-card">
+      <label class="date-field">
+        <span class="date-label">発注日</span>
+        <input type="date" id="orderDate" class="date-input" />
+      </label>
+      <label class="date-field">
+        <span class="date-label">納品希望日</span>
+        <input type="date" id="deliveryDate" class="date-input" />
+      </label>
+      <p class="autosave-note">入力は自動保存されます（端末内）。日付が変わると新しい発注になります。</p>
+    </section>
+
+    <!-- 業者ごとのセクション（JSで生成） -->
+    <div id="vendors"></div>
+
+    <!-- 末尾：本日分クリア -->
+    <section class="footer-actions">
+      <button type="button" id="clearBtn" class="clear-btn">本日分をクリア</button>
+      <p class="version-note">テジュン食堂 発注書アプリ — STEP1</p>
+    </section>
+  </main>
+
+  <!-- 目次へ戻るフローティングボタン -->
+  <button type="button" id="toTopBtn" class="to-top" aria-label="目次へ戻る" hidden>▲ 目次</button>
+
+  <!-- PDF生成用の画面外ステージ -->
+  <div id="pdfStage" aria-hidden="true"></div>
+
+  <!-- トースト通知 -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="lib/jspdf.umd.min.js"></script>
+  <script src="lib/html2canvas.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

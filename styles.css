@@ -1,0 +1,453 @@
+:root {
+  --toc-h: 56px;
+  --bg: #f6f7f5;
+  --ink: #1f2421;
+  --muted: #6b7280;
+  --line: #e3e5e1;
+  --shop: #2f6f4f;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --radius: 14px;
+  --tap: 48px;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP",
+    "Yu Gothic", "YuGothic", system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ===== 上部 目次バー ===== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: saturate(1.4) blur(6px);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 10px calc(8px + env(safe-area-inset-top));
+  padding-top: max(8px, env(safe-area-inset-top));
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.toc-chip {
+  appearance: none;
+  border: 1.5px solid var(--chip-accent, #ccc);
+  background: var(--chip-bg, #fff);
+  color: var(--chip-ink, #333);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: transform 0.08s ease;
+}
+
+.toc-chip:active {
+  transform: scale(0.95);
+}
+
+.toc-chip.current {
+  box-shadow: 0 0 0 2px var(--chip-accent, #888) inset;
+}
+
+.toc-chip .chip-count {
+  font-size: 11px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--chip-accent, #888);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.toc-chip .chip-count.zero {
+  display: none;
+}
+
+.save-pill {
+  flex: 0 0 auto;
+  align-self: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--shop);
+  background: #e8f3ec;
+  border-radius: 999px;
+  padding: 4px 9px;
+  white-space: nowrap;
+}
+
+.save-pill.saving {
+  color: var(--muted);
+  background: #eee;
+}
+
+.save-pill.error {
+  color: #b3261e;
+  background: #fbe9e7;
+}
+
+/* ===== 本文 ===== */
+.content {
+  padding: 14px 12px 40px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.app-title {
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  margin: 6px 0 14px;
+  letter-spacing: 0.04em;
+}
+
+/* ===== 日付カード ===== */
+.date-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  margin-bottom: 18px;
+}
+
+.date-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.date-field:last-of-type {
+  margin-bottom: 0;
+}
+
+.date-label {
+  flex: 0 0 86px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.date-input {
+  flex: 1;
+  font-size: 16px;
+  font-family: inherit;
+  padding: 11px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  min-height: var(--tap);
+}
+
+.autosave-note {
+  margin: 12px 0 0;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ===== 業者セクション ===== */
+.vendor {
+  border-radius: var(--radius);
+  padding: 12px 12px 14px;
+  margin-bottom: 18px;
+  background: var(--v-bg, #fff);
+  border: 1px solid var(--v-line, var(--line));
+  scroll-margin-top: calc(var(--toc-h) + 10px);
+}
+
+.vendor-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.vendor-head .v-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--v-accent, var(--ink));
+}
+
+.vendor-head .v-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--v-accent, #888);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.vendor-head .v-count.zero {
+  color: var(--v-accent, #888);
+  background: transparent;
+  border: 1px solid var(--v-accent, #ccc);
+}
+
+/* 食材行 */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 4px solid transparent;
+  border-radius: 12px;
+  padding: 9px 10px 9px 12px;
+  margin-bottom: 8px;
+}
+
+.item.active {
+  border-left-color: var(--v-accent, var(--shop));
+  background: var(--v-soft, #f3faf5);
+}
+
+.item-name {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid var(--line);
+  background: #fff;
+}
+
+.step-btn {
+  appearance: none;
+  border: none;
+  background: #f4f5f3;
+  width: var(--tap);
+  height: var(--tap);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.step-btn:active {
+  background: #e4e6e2;
+}
+
+.step-btn.plus {
+  color: var(--v-accent, var(--shop));
+}
+
+.qty-input {
+  width: 56px;
+  height: var(--tap);
+  border: none;
+  border-left: 1.5px solid var(--line);
+  border-right: 1.5px solid var(--line);
+  text-align: center;
+  font-size: 19px;
+  font-weight: 800;
+  font-family: inherit;
+  color: var(--ink);
+  background: #fff;
+  -moz-appearance: textfield;
+  padding: 0;
+}
+
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.qty-input.zero {
+  color: #b9bdb7;
+  font-weight: 600;
+}
+
+/* 業者フッター（PDF・テキスト） */
+.vendor-foot {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  align-items: stretch;
+}
+
+.pdf-btn {
+  appearance: none;
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  background: var(--v-accent, var(--shop));
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  min-height: 52px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  touch-action: manipulation;
+}
+
+.pdf-btn:active {
+  filter: brightness(0.93);
+}
+
+.pdf-btn:disabled {
+  opacity: 0.6;
+}
+
+.text-btn {
+  appearance: none;
+  flex: 0 0 auto;
+  border: 1.5px solid var(--v-accent, var(--shop));
+  border-radius: 12px;
+  background: #fff;
+  color: var(--v-accent, var(--shop));
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0 16px;
+  min-height: 52px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.text-btn:active {
+  background: #f0f0f0;
+}
+
+/* ===== 末尾 ===== */
+.footer-actions {
+  text-align: center;
+  margin-top: 26px;
+}
+
+.clear-btn {
+  appearance: none;
+  border: 1.5px solid #d9534f;
+  color: #d9534f;
+  background: #fff;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 22px;
+  cursor: pointer;
+}
+
+.clear-btn:active {
+  background: #fdecea;
+}
+
+.version-note {
+  margin-top: 18px;
+  font-size: 11px;
+  color: #aab0aa;
+}
+
+/* ===== フローティング：目次へ戻る ===== */
+.to-top {
+  position: fixed;
+  right: 14px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 40;
+  border: none;
+  border-radius: 999px;
+  background: rgba(31, 36, 33, 0.86);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.to-top[hidden] {
+  display: none;
+}
+
+/* ===== トースト ===== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(78px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(31, 36, 33, 0.95);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 12px;
+  max-width: 88%;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.toast[hidden] {
+  display: none;
+}
+
+/* ===== PDF生成ステージ（画面外） ===== */
+#pdfStage {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 680px;
+  background: #fff;
+  pointer-events: none;
+}

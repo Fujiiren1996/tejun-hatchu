@@ -16,33 +16,93 @@ const SHOP_TEL = ""; // 電話番号（任意）。例 "03-1234-5678" と入れ�
 
 /* ===== 設定：業者（上から表示順・色は薄め） ===== */
 const VENDORS = [
-  { id: "yaoya",   name: "八百屋",   bg: "#eaf6ec", soft: "#f2faf4", line: "#cfe7d4", accent: "#3f9c52" }, // 薄緑
-  { id: "kankoku", name: "韓国食材", bg: "#fdecec", soft: "#fdf3f3", line: "#f3d2d2", accent: "#d9534f" }, // 薄赤
-  { id: "narita",  name: "成田さん", bg: "#eaf1fb", soft: "#f3f7fd", line: "#d2e0f3", accent: "#3f72b5" }, // 薄青
-  { id: "sakatsu", name: "サカツ",   bg: "#fff7df", soft: "#fffbee", line: "#f0e3b8", accent: "#b78a14" }, // 薄黄
-  { id: "askul",   name: "アスクル", bg: "#f1f2f3", soft: "#f7f8f8", line: "#dddfe1", accent: "#6c757d" }, // 薄グレー
+  { id: "manyu",  name: "万友",  bg: "#eaf6ec", soft: "#f2faf4", line: "#cfe7d4", accent: "#3f9c52" }, // 緑
+  { id: "narita", name: "ナリタ", bg: "#eaf1fb", soft: "#f3f7fd", line: "#d2e0f3", accent: "#3f72b5" }, // 青
 ];
 
 /* ===== 設定：食材 ===== */
 const ITEMS = [
-  // 八百屋
-  { id: "shimeji",   name: "しめじ",   vendor: "yaoya",   unit: "" },
-  { id: "enoki",     name: "えのき",   vendor: "yaoya",   unit: "" },
-  { id: "daikon",    name: "大根",     vendor: "yaoya",   unit: "" },
-  { id: "nira",      name: "ニラ",     vendor: "yaoya",   unit: "" },
-  { id: "negi",      name: "ネギ",     vendor: "yaoya",   unit: "" },
-  { id: "tamanegi",  name: "玉ねぎ",   vendor: "yaoya",   unit: "" },
-  // 韓国食材
-  { id: "tteok",     name: "トッポギ", vendor: "kankoku", unit: "" },
-  { id: "kimchi",    name: "キムチ",   vendor: "kankoku", unit: "" },
-  { id: "harusame",  name: "春雨",     vendor: "kankoku", unit: "" },
-  // 成田さん
-  { id: "baniku",    name: "馬肉",     vendor: "narita",  unit: "" },
-  // サカツ
-  { id: "sake",      name: "酒類",     vendor: "sakatsu", unit: "" },
-  // アスクル
-  { id: "paper",     name: "ペーパー類", vendor: "askul", unit: "" },
+  // ───── 万友（緑）─────
+  { id: "moyashi",   name: "もやし",       vendor: "manyu", unit: "袋" },
+  { id: "shimeji",   name: "しめじ",       vendor: "manyu", unit: "袋" },
+  { id: "zenmai",    name: "ぜんまい",     vendor: "manyu", unit: "袋" },
+  { id: "egoma",     name: "えごま",       vendor: "manyu", unit: "袋" },
+  { id: "lemon",     name: "レモン",       vendor: "manyu", unit: "個" },
+  { id: "daikon",    name: "大根",         vendor: "manyu", unit: "本" },
+  { id: "cabbage",   name: "キャベツ",     vendor: "manyu", unit: "個" },
+  { id: "kyuri",     name: "きゅうり",     vendor: "manyu", unit: "袋" },
+  { id: "sunny",     name: "サニーレタス", vendor: "manyu", unit: "玉" },
+  { id: "piman",     name: "ピーマン",     vendor: "manyu", unit: "袋" },
+  { id: "nasu",      name: "ナス",         vendor: "manyu", unit: "本" },
+  { id: "potato",    name: "ジャガイモ",   vendor: "manyu", unit: "袋" },
+  { id: "tamago",    name: "卵",           vendor: "manyu", unit: "pc" },
+  { id: "tamanegi",  name: "玉ねぎ",       vendor: "manyu", unit: "袋" },
+  { id: "sanchu",    name: "サンチュ",     vendor: "manyu", unit: "袋" },
+  { id: "nira",      name: "ニラ",         vendor: "manyu", unit: "束" },
+  // 万友（2日前発注の品）
+  { id: "ninjin",    name: "人参",         vendor: "manyu", unit: "袋" },
+  { id: "shironegi", name: "白ネギ",       vendor: "manyu", unit: "pc" },
+  { id: "aonegi",    name: "青ネギ",       vendor: "manyu", unit: "pc" },
+  // 万友（鍋具材）
+  { id: "hakusai",   name: "白菜",         vendor: "manyu", unit: "玉" },
+  { id: "enoki",     name: "えのき",       vendor: "manyu", unit: "袋" },
+  { id: "seri",      name: "せり",         vendor: "manyu", unit: "束" },
+
+  // ───── ナリタ（青）─────
+  { id: "hakusai_kimchi", name: "白菜キムチ",     vendor: "narita", unit: "袋" },
+  { id: "aotogarashi",    name: "青唐辛子",       vendor: "narita", unit: "袋" },
+  { id: "tteokbokki",     name: "トッポギ",       vendor: "narita", unit: "袋" },
+  { id: "kanjang",        name: "カンジャンタレ", vendor: "narita", unit: "袋" },
+  { id: "yangnyeom",      name: "ヤンニョムタレ", vendor: "narita", unit: "袋" },
+  { id: "honey_dare",     name: "ハニーだれ",     vendor: "narita", unit: "袋" },
+  { id: "yangnyeonjang",  name: "ヤンニンジャン", vendor: "narita", unit: "個" },
+  { id: "gochujang",      name: "コチュジャン",   vendor: "narita", unit: "個" },
+  { id: "chige_miso",     name: "チゲ味噌",       vendor: "narita", unit: "個" },
+  // ナリタ（冷凍庫）
+  { id: "niku_gyoza",     name: "肉餃子",         vendor: "narita", unit: "袋" },
+  { id: "kimchi_gyoza",   name: "キムチ餃子",     vendor: "narita", unit: "袋" },
+  { id: "changja",        name: "チャンジャ",     vendor: "narita", unit: "袋" },
+  { id: "gyukotsu",       name: "牛骨スープ",     vendor: "narita", unit: "個" },
+  { id: "oden",           name: "おでん",         vendor: "narita", unit: "袋" },
+  // ナリタ（奥棚）
+  { id: "chijimi_ko",     name: "チヂミ粉",       vendor: "narita", unit: "袋" },
+  { id: "nashi_juice",    name: "梨ジュース",     vendor: "narita", unit: "個" },
+  { id: "momo_juice",     name: "桃ジュース",     vendor: "narita", unit: "個" },
+  { id: "budou_juice",    name: "ブドウジュース", vendor: "narita", unit: "個" },
+  // ナリタ（キッチン）
+  { id: "reimen",         name: "冷麺",           vendor: "narita", unit: "袋" },
+  { id: "reimen_soup",    name: "冷麺スープ",     vendor: "narita", unit: "袋" },
+  { id: "kankoku_nori",   name: "韓国海苔",       vendor: "narita", unit: "袋" },
+  { id: "harusame",       name: "春雨",           vendor: "narita", unit: "個" },
+  { id: "sarimen",        name: "サリ麺",         vendor: "narita", unit: "袋" },
+  { id: "jaban_nori",     name: "ジャバン海苔",   vendor: "narita", unit: "袋" },
 ];
+
+/* ===== 設定：目安（在庫の目安）。上の切り替えで表示が変わります ===== */
+// 「ベース」は写真の在庫欄の数を入れています。
+// 「2日分」「月末」は数字が決まったら下に { id: 数 } を足すだけでOK（空なら「目安 —」と表示）。
+const GUIDE_MODES = [
+  { id: "base",  label: "ベース" },
+  { id: "two",   label: "2日分" },
+  { id: "month", label: "月末" },
+];
+const GUIDES = {
+  base: {
+    // 万友
+    moyashi: 1, shimeji: 2, zenmai: 1, egoma: 2, lemon: 6, daikon: 2,
+    cabbage: 1, kyuri: 2, sunny: 1, piman: 3, nasu: 4, potato: 2,
+    tamago: 8, tamanegi: 4, sanchu: 20, nira: 8, ninjin: 4, shironegi: 2,
+    aonegi: 2, hakusai: 1, enoki: 1, seri: 1,
+    // ナリタ
+    hakusai_kimchi: 4, aotogarashi: 2, tteokbokki: 5, kanjang: 2, yangnyeom: 1,
+    honey_dare: 1, yangnyeonjang: 2, gochujang: 2, chige_miso: 2, niku_gyoza: 2,
+    kimchi_gyoza: 2, changja: 1, gyukotsu: 2, oden: 2, chijimi_ko: 2,
+    nashi_juice: 1, momo_juice: 1, budou_juice: 1, reimen: 5, reimen_soup: 10,
+    kankoku_nori: 4, harusame: 5, sarimen: 6, jaban_nori: 2,
+  },
+  two: {}, // 2日分（あとで数字を追加）
+  month: {}, // 月末（あとで数字を追加）
+};
 
 /* =========================================================================
  * ここから下はプログラム本体（通常は触らなくてOK）
@@ -90,6 +150,25 @@ function clampQty(v) {
 /* ----- 状態（当日分） ----- */
 let sessionDate = todayYmd();
 let state = { orderDate: "", deliveryDate: "", qty: {} };
+
+/* ----- 目安モード（ベース／2日分／月末）。表示のみ・端末に記憶 ----- */
+const GUIDE_KEY = "tejun-guide-mode";
+let guideMode = "base";
+function loadGuideMode() {
+  try {
+    const m = localStorage.getItem(GUIDE_KEY);
+    if (m && GUIDES[m]) return m;
+  } catch (e) {}
+  return "base";
+}
+function saveGuideMode() {
+  try { localStorage.setItem(GUIDE_KEY, guideMode); } catch (e) {}
+}
+function getGuide(itemId) {
+  const m = GUIDES[guideMode] || {};
+  const v = m[itemId];
+  return typeof v === "number" ? v : null;
+}
 
 function blankState() {
   const t = todayYmd();
@@ -156,6 +235,7 @@ const vendorEls = {}; // vendorId -> { section, countBadge, tocCount }
  * ========================================================================= */
 function buildUI() {
   buildTOC();
+  buildGuideSwitch();
   buildVendors();
   // 日付入力
   $("#orderDate").value = state.orderDate;
@@ -228,8 +308,12 @@ function buildVendors() {
 
 function buildItemRow(item, vendor) {
   const row = el("div", "item");
+  const main = el("div", "item-main");
   const nameEl = el("span", "item-name");
   nameEl.textContent = item.unit ? `${item.name}（${item.unit}）` : item.name;
+  const guideEl = el("span", "item-guide");
+  main.appendChild(nameEl);
+  main.appendChild(guideEl);
 
   const stepper = el("div", "stepper");
   const minus = el("button", "step-btn minus");
@@ -267,10 +351,10 @@ function buildItemRow(item, vendor) {
   stepper.appendChild(minus);
   stepper.appendChild(input);
   stepper.appendChild(plus);
-  row.appendChild(nameEl);
+  row.appendChild(main);
   row.appendChild(stepper);
 
-  refs[item.id] = { row, input };
+  refs[item.id] = { row, input, guide: guideEl };
   return row;
 }
 
@@ -341,6 +425,55 @@ function refreshAllValues() {
     refreshRowVisual(it.id);
   });
   VENDORS.forEach((v) => updateVendorCount(v.id));
+  updateAllGuides();
+}
+
+/* ----- 目安（在庫の目安）の表示 ----- */
+function updateItemGuide(id) {
+  const ref = refs[id];
+  if (!ref || !ref.guide) return;
+  const v = getGuide(id);
+  ref.guide.textContent = v != null ? `目安 ${v}` : "目安 —";
+  ref.guide.classList.toggle("none", v == null);
+}
+function updateAllGuides() {
+  ITEMS.forEach((it) => updateItemGuide(it.id));
+}
+
+function buildGuideSwitch() {
+  const wrap = $("#guideSwitch");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+  const label = el("span", "guide-switch-label");
+  label.textContent = "目安";
+  const seg = el("div", "seg");
+  GUIDE_MODES.forEach((m) => {
+    const b = el("button", "seg-btn");
+    b.type = "button";
+    b.textContent = m.label;
+    b.dataset.mode = m.id;
+    b.setAttribute("aria-pressed", String(m.id === guideMode));
+    if (m.id === guideMode) b.classList.add("active");
+    b.addEventListener("click", () => safe(() => setGuideMode(m.id)));
+    seg.appendChild(b);
+  });
+  wrap.appendChild(label);
+  wrap.appendChild(seg);
+}
+
+function setGuideMode(mode) {
+  if (!GUIDES[mode]) return;
+  guideMode = mode;
+  saveGuideMode();
+  const seg = $("#guideSwitch");
+  if (seg) {
+    seg.querySelectorAll(".seg-btn").forEach((b) => {
+      const on = b.dataset.mode === mode;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
+  }
+  updateAllGuides();
 }
 
 /* =========================================================================
@@ -356,11 +489,11 @@ function buildOrderFormHTML(vendor, list) {
   const rows = list
     .map(
       (it, i) => `
-      <tr style="background:${i % 2 ? "#f4f7f5" : "#ffffff"};">
-        <td style="border:1px solid #d8ddd9;padding:12px 4px;text-align:center;color:#8a948d;font-size:14px;">${i + 1}</td>
-        <td style="border:1px solid #d8ddd9;padding:12px 16px;font-size:17px;">${escapeHtml(it.name)}</td>
-        <td style="border:1px solid #d8ddd9;padding:12px 8px;text-align:center;font-size:22px;font-weight:800;line-height:1.1;">${it.qty}${
-          it.unit ? `<span style="font-size:12px;font-weight:500;color:#666;"> ${escapeHtml(it.unit)}</span>` : ""
+      <tr style="background:${i % 2 ? "#f3f3f3" : "#ffffff"};">
+        <td style="border:1px solid #bbbbbb;padding:12px 4px;text-align:center;color:#999999;font-size:14px;">${i + 1}</td>
+        <td style="border:1px solid #bbbbbb;padding:12px 16px;font-size:17px;">${escapeHtml(it.name)}</td>
+        <td style="border:1px solid #bbbbbb;padding:12px 8px;text-align:center;font-size:22px;font-weight:800;line-height:1.1;">${it.qty}${
+          it.unit ? `<span style="font-size:12px;font-weight:500;color:#555;"> ${escapeHtml(it.unit)}</span>` : ""
         }</td>
       </tr>`
     )
@@ -373,8 +506,8 @@ function buildOrderFormHTML(vendor, list) {
   return `
   <div class="order-form" style="width:680px;background:#fff;color:#1a1a1a;
        font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif;
-       box-sizing:border-box;border:1px solid #e3e5e1;">
-    <div style="height:10px;background:${vendor.accent};"></div>
+       box-sizing:border-box;border:1px solid #bbbbbb;">
+    <div style="height:6px;background:#1a1a1a;"></div>
     <div style="padding:34px 40px 38px;">
 
       <div style="text-align:center;margin-bottom:22px;">
@@ -385,16 +518,16 @@ function buildOrderFormHTML(vendor, list) {
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:22px;">
         <div style="flex:1;min-width:0;">
           <div style="font-size:25px;font-weight:800;border-bottom:2px solid #1a1a1a;
-               padding-bottom:7px;display:inline-block;">${escapeHtml(vendor.name)}　御中</div>
+               padding-bottom:7px;display:inline-block;">${escapeHtml(vendor.name)}　様</div>
           <div style="font-size:13px;color:#555;margin-top:14px;">発注日：${formatJp(state.orderDate)}</div>
         </div>
-        <div style="flex:0 0 auto;border:1px solid #cdd3ce;border-radius:8px;padding:12px 16px;min-width:224px;">
-          <div style="font-size:11px;color:#9aa39c;letter-spacing:0.08em;">発注元</div>
+        <div style="flex:0 0 auto;border:1px solid #bbbbbb;border-radius:8px;padding:12px 16px;min-width:224px;">
+          <div style="font-size:11px;color:#888888;letter-spacing:0.08em;">発注元</div>
           <div style="font-size:17px;font-weight:800;">${escapeHtml(SHOP_NAME)}</div>
           ${telLine}
-          <div style="margin-top:9px;padding-top:9px;border-top:1px dashed #d3d8d4;">
-            <div style="font-size:11px;color:#9aa39c;letter-spacing:0.08em;">納品希望日</div>
-            <div style="font-size:18px;font-weight:800;color:#c0392b;">${formatJp(state.deliveryDate)}</div>
+          <div style="margin-top:9px;padding-top:9px;border-top:1px dashed #cccccc;">
+            <div style="font-size:11px;color:#888888;letter-spacing:0.08em;">納品希望日</div>
+            <div style="font-size:18px;font-weight:800;border-bottom:2px solid #1a1a1a;display:inline-block;padding-bottom:1px;">${formatJp(state.deliveryDate)}</div>
           </div>
         </div>
       </div>
@@ -403,10 +536,10 @@ function buildOrderFormHTML(vendor, list) {
 
       <table style="width:100%;border-collapse:collapse;">
         <thead>
-          <tr style="background:#2f3a34;color:#fff;">
-            <th style="border:1px solid #2f3a34;padding:11px 4px;width:46px;font-size:13px;font-weight:700;">No.</th>
-            <th style="border:1px solid #2f3a34;padding:11px 16px;text-align:left;font-size:14px;font-weight:700;">品名</th>
-            <th style="border:1px solid #2f3a34;padding:11px 8px;width:104px;font-size:14px;font-weight:700;">数量</th>
+          <tr style="background:#1a1a1a;color:#fff;">
+            <th style="border:1px solid #1a1a1a;padding:11px 4px;width:46px;font-size:13px;font-weight:700;">No.</th>
+            <th style="border:1px solid #1a1a1a;padding:11px 16px;text-align:left;font-size:14px;font-weight:700;">品名</th>
+            <th style="border:1px solid #1a1a1a;padding:11px 8px;width:104px;font-size:14px;font-weight:700;">数量</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -415,8 +548,8 @@ function buildOrderFormHTML(vendor, list) {
       <div style="text-align:right;font-size:15px;font-weight:800;margin-top:12px;">合計　${list.length} 品目</div>
 
       <div style="margin-top:22px;">
-        <div style="font-size:11px;color:#9aa39c;letter-spacing:0.08em;margin-bottom:5px;">備考</div>
-        <div style="border:1px solid #cdd3ce;border-radius:8px;height:56px;"></div>
+        <div style="font-size:11px;color:#888888;letter-spacing:0.08em;margin-bottom:5px;">備考</div>
+        <div style="border:1px solid #bbbbbb;border-radius:8px;height:56px;"></div>
       </div>
 
       <div style="text-align:right;font-size:14px;margin-top:24px;">以上、よろしくお願いいたします。</div>
@@ -704,6 +837,7 @@ function updateTocHeightVar() {
 function init() {
   sessionDate = todayYmd();
   state = loadState(sessionDate);
+  guideMode = loadGuideMode();
 
   buildUI();
   refreshAllValues();

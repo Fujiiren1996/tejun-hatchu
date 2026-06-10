@@ -200,6 +200,56 @@ body {
   line-height: 1.5;
 }
 
+/* ===== 目安の切り替え（ベース／2日分／月末） ===== */
+.guide-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.guide-switch-label {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.seg {
+  flex: 1;
+  display: flex;
+  background: #eceeea;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.seg-btn {
+  flex: 1;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 10px 4px;
+  border-radius: 9px;
+  cursor: pointer;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+.seg-btn.active {
+  background: #fff;
+  color: var(--shop);
+  box-shadow: var(--shadow);
+}
+
+.seg-btn:active {
+  transform: scale(0.97);
+}
+
 /* ===== 業者セクション ===== */
 .vendor {
   border-radius: var(--radius);
@@ -257,12 +307,29 @@ body {
   background: var(--v-soft, #f3faf5);
 }
 
-.item-name {
+.item-main {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-name {
   font-size: 16px;
   font-weight: 600;
-  min-width: 0;
   word-break: break-word;
+}
+
+.item-guide {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.item-guide.none {
+  color: #c2c6c1;
+  font-weight: 600;
 }
 
 .stepper {
